@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -15,6 +16,8 @@ public class PrimeNumbers {
         public Collection<Integer> calculate(int numPrimes);
         
     	default boolean isPrime(final int candidate) {
+    		
+    		if (candidate < 2) return false;
     		for (int i = 2; i * i <= candidate; ++i) {
     			if (candidate % i == 0) {
     				return false;
@@ -22,6 +25,11 @@ public class PrimeNumbers {
     		}
     		return true;
     	}
+    	
+//        default boolean isPrime(final int candidate) {
+//        	return IntStream.range(2, candidate)
+//        					.allMatch(x -> (candidate % x) != 0);
+//        }
     }
 
     public static class PrimeNumberCalculator {
@@ -115,6 +123,53 @@ public class PrimeNumbers {
         }   
     }
 
+   public static class AnotherConcurrentPrimeCalculator implements PrimeNumberStrategy {
+    	
+        public Collection<Integer> calculate(int numPrimes) {
+        	
+        	int maxPrimes; 
+			if (numPrimes < 1) 
+				return Collections.emptyList();
+			if (numPrimes > MAX_PRIMES) 
+				maxPrimes = MAX_PRIMES;
+			else
+				maxPrimes = numPrimes;
+        	
+        	final List<Integer> candidates = IntStream.range(2, 100000).boxed().collect(Collectors.toList());
+			return candidates.
+							parallelStream().
+							filter(this::isPrime).
+							limit(maxPrimes).
+							collect(Collectors.toList());
+        }   
+    }
+   
+   public static class AccurateConcurrentPrimeCalculator implements PrimeNumberStrategy {
+   	
+       public Collection<Integer> calculate(int numPrimes) {
+       	
+       		int maxPrimes; 
+			if (numPrimes < 1) 
+				return Collections.emptyList();
+			if (numPrimes > MAX_PRIMES) 
+				maxPrimes = MAX_PRIMES;
+			else
+				maxPrimes = numPrimes;
+			
+//			IntStream.generate(new AtomicInteger()::getAndIncrement)
+//								.limit(numPrimes)
+//								.forEach(System.out::println);
+
+			final List<Integer> candidates = IntStream.generate(new AtomicInteger()::getAndIncrement).
+					filter(this::isPrime).
+					peek(candidate -> System.out.print(candidate + ", ")).
+					limit(maxPrimes).
+					boxed().collect(Collectors.toList());
+			return candidates;
+
+       }   
+   }
+   
 	// Cap maximum number of calculable primes
 	public static final int MAX_PRIMES = 100000;
 	
