@@ -162,7 +162,7 @@ public class PrimeNumbers {
 
 			final List<Integer> candidates = IntStream.generate(new AtomicInteger()::getAndIncrement).
 					filter(this::isPrime).
-					peek(candidate -> System.out.print(candidate + ", ")).
+//					peek(candidate -> System.out.print(candidate + ", ")).
 					limit(maxPrimes).
 					boxed().collect(Collectors.toList());
 			return candidates;
@@ -171,7 +171,7 @@ public class PrimeNumbers {
    }
    
 	// Cap maximum number of calculable primes
-	public static final int MAX_PRIMES = 100000;
+	public static final int MAX_PRIMES = 1000000;
 	
 	public static List<Integer> validate(int numPrimes) {
 		

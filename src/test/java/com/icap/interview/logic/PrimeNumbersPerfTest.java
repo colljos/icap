@@ -4,10 +4,7 @@ import java.util.function.Function;
 
 import org.junit.Test;
 
-import com.icap.interview.logic.PrimeNumbers.ConcurrentPrimeCalculator;
-import com.icap.interview.logic.PrimeNumbers.PreJava8PrimeCalculator;
-import com.icap.interview.logic.PrimeNumbers.PrimeNumberCalculator;
-import com.icap.interview.logic.PrimeNumbers.SimplePrimeCalculator;
+import com.icap.interview.logic.PrimeNumbers.*; 
 
 public class PrimeNumbersPerfTest {
 
@@ -18,14 +15,21 @@ public class PrimeNumbersPerfTest {
 	@Test
 	public void testPrimeCalculatorPerformance() {
 		
+		final int NUM_PRIMES = 500000;
+		
 		PrimeNumberCalculator calcJ7 = new PrimeNumberCalculator(new PreJava8PrimeCalculator());
 		PrimeNumberCalculator calcJ8S = new PrimeNumberCalculator(new SimplePrimeCalculator());
-        PrimeNumberCalculator calcJ8C = new PrimeNumberCalculator(new ConcurrentPrimeCalculator());
+//        PrimeNumberCalculator calcJ8C = new PrimeNumberCalculator(new ConcurrentPrimeCalculator());
+//        PrimeNumberCalculator calcJ8C2 = new PrimeNumberCalculator(new AnotherConcurrentPrimeCalculator());
+        PrimeNumberCalculator calcJ8C3 = new PrimeNumberCalculator(new AccurateConcurrentPrimeCalculator());
 
         // calculate 10000;
-        System.out.println("PreJava8PrimeCalculator done in: " + measurePerf(calcJ7::calculate, 10000) + " msecs" );
-        System.out.println("SimplePrimeCalculator done in: " + measurePerf(calcJ8S::calculate, 10000) + " msecs" );
-        System.out.println("ConcurrentPrimeCalculator done in: " + measurePerf(calcJ8C::calculate, 10000) + " msecs" );
+        System.out.println("Calculating " + NUM_PRIMES + " primes:");
+        System.out.println("PreJava8PrimeCalculator done in: " + measurePerf(calcJ7::calculate, NUM_PRIMES) + " msecs" );
+        System.out.println("SimplePrimeCalculator done in: " + measurePerf(calcJ8S::calculate, NUM_PRIMES) + " msecs" );
+//        System.out.println("ConcurrentPrimeCalculator done in: " + measurePerf(calcJ8C::calculate, NUM_PRIMES) + " msecs" );
+//        System.out.println("AnotherConcurrentPrimeCalculator done in: " + measurePerf(calcJ8C2::calculate, NUM_PRIMES) + " msecs" );
+        System.out.println("AccurateConcurrentPrimeCalculator done in: " + measurePerf(calcJ8C3::calculate, NUM_PRIMES) + " msecs" );
 	}
 	
 		
